@@ -15,4 +15,6 @@
 And since we are grabbing the item by the SKU we wont find it. 
 - To fix this i would deffinitly set a Test data per Env if there are different Items per env.
 
+- Some steps are wrapped in unecessary test.step just for fun to make it look better in the UI runner ^^
+
 
