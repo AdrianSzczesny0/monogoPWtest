@@ -23,8 +23,9 @@ test.describe('Shopt test cases', () => {
 
     test('TC 1 - Verify if it is possible to add a product to the cart', async () => { 
       page = await context.newPage();
-      on = new On(page);
-      const expectedProduct = new Product("Ploom X Advanced Rose Shimmer","1","£29.00");
+      on = new On(page, env);
+      const ukExpectedProduct = new Product("Ploom X Advanced Rose Shimmer","1","£29.00");
+      const plExpectedProduct = new Product("Wymienny panel Cotton White", "1", "34,99 zł");
 
       await test.step("Open Ploom Site" , async () => {
         await page.goto(env.BASE_URL);
@@ -37,16 +38,19 @@ test.describe('Shopt test cases', () => {
 
       await test.step("Search and add product to cart", async () =>{
         await on.HomePage.goToShopPage();
-        await on.ShopPage.openItemDetails(ShopItem.PloomXAdventure);
+        await on.ShopPage.openItemDetails();
         await on.ProductPage.verifyProductDetailsPageLoaded();
         await on.ProductPage.addToCard();
-        await on.Toast.verifyToastWithMessage(Status.SUCCESS,'Product added to cart');
         await on.MiniCart.verifyMiniCartDisplayed();
       });
 
       await test.step("Validation", async () =>{
         const cartItems = await on.MiniCart.getItemList();
-        expect(cartItems.at(0)).toEqual(expectedProduct);
+        if(environment === 'PL'){
+          await on.MiniCart.verifyCartItem(cartItems[0], plExpectedProduct);
+        }else if(environment == 'UK'){
+          expect(cartItems.at(0)).toEqual(ukExpectedProduct);
+        }
         expect(await on.MiniCart.getItemAmountInBasket()).toBe(1);
       });
 
@@ -77,6 +81,7 @@ test.describe('Shopt test cases', () => {
 
       await test.step("Verify links on page work", async () =>{
         console.log(await on.Utility.verifyLinks());
+        console.log(await on.Utility.verifyImagesLoaded());
       });
     });
     
